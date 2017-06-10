@@ -24,11 +24,13 @@
             android:layout_height="50dp" />
         
         <EditText
+            android:id="@+id/ed_text"
             android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         
         <Button
+            android:id="@+id/bt_send"
             android:layout_weight="1"
             android:text="Send"
             android:layout_width="0dp"
