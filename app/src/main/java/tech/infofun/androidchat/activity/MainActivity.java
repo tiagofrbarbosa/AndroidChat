@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,15 +22,23 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private Button button;
 
+    private ListView messageList;
+    private List<Message> messages;
+
+    private ChatService chatService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView messageList = (ListView) findViewById(R.id.lv_message);
-        List<Message> messages = Arrays.asList(new Message(1, "Hello World!"), new Message(2, "Hi"));
+        messageList = (ListView) findViewById(R.id.lv_message);
+        messages = new ArrayList<>();
         MessageAdapter adapter = new MessageAdapter(clientId, messages, this);
         messageList.setAdapter(adapter);
+
+        chatService = new ChatService(this);
+        chatService.listen();
 
         editText = (EditText) findViewById(R.id.ed_text);
 
@@ -38,8 +47,19 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ChatService().send(new Message(clientId, editText.getText().toString()));
+                new ChatService(MainActivity.this).send(new Message(clientId, editText.getText().toString()));
             }
         });
+    }
+
+    public void insertInList(Message m){
+
+        messages.add(m);
+
+        MessageAdapter adapter = new MessageAdapter(clientId, messages, this);
+
+        messageList.setAdapter(adapter);
+
+        chatService.listen();
     }
 }
