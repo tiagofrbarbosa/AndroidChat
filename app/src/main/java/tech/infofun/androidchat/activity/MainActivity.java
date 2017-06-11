@@ -8,16 +8,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import tech.infofun.androidchat.app.ChatApplication;
 import tech.infofun.androidchat.R;
 import tech.infofun.androidchat.adapter.MessageAdapter;
 import tech.infofun.androidchat.callback.ListenMessagesCallback;
 import tech.infofun.androidchat.callback.SendMessageCallback;
+import tech.infofun.androidchat.component.ChatComponent;
 import tech.infofun.androidchat.model.Message;
 import tech.infofun.androidchat.service.ChatService;
 
@@ -30,24 +31,25 @@ public class MainActivity extends AppCompatActivity {
     private ListView messageList;
     private List<Message> messages;
 
-    private ChatService chatService;
+    @Inject
+    ChatService chatService;
+
+    private ChatComponent component;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ChatApplication app = (ChatApplication) getApplication();
+        component = app.getComponent();
+        component.inject(this);
+
         messageList = (ListView) findViewById(R.id.lv_message);
         messages = new ArrayList<>();
         MessageAdapter adapter = new MessageAdapter(String.valueOf(clientId), messages, this);
         messageList.setAdapter(adapter);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.26:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        chatService = retrofit.create(ChatService.class);
         Call<Message> call =  chatService.listen();
         call.enqueue(new ListenMessagesCallback(this));
 
