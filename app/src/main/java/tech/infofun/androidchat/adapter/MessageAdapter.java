@@ -19,9 +19,9 @@ public class MessageAdapter extends BaseAdapter{
 
     private List<Message> messages;
     private Activity activity;
-    private int clientId;
+    private String clientId;
 
-    public MessageAdapter(int clientId, List<Message> messages, Activity activity){
+    public MessageAdapter(String clientId, List<Message> messages, Activity activity){
         this.clientId = clientId;
         this.messages = messages;
         this.activity = activity;
@@ -50,7 +50,7 @@ public class MessageAdapter extends BaseAdapter{
 
         Message message = getItem(position);
 
-        if(clientId != message.getId()){
+        if(!clientId.equals(message.getId())){
             row.setBackgroundColor(Color.CYAN);
         }
 

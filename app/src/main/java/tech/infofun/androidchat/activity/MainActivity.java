@@ -11,8 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import tech.infofun.androidchat.R;
 import tech.infofun.androidchat.adapter.MessageAdapter;
+import tech.infofun.androidchat.callback.ListenMessagesCallback;
+import tech.infofun.androidchat.callback.SendMessageCallback;
 import tech.infofun.androidchat.model.Message;
 import tech.infofun.androidchat.service.ChatService;
 
@@ -34,11 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
         messageList = (ListView) findViewById(R.id.lv_message);
         messages = new ArrayList<>();
-        MessageAdapter adapter = new MessageAdapter(clientId, messages, this);
+        MessageAdapter adapter = new MessageAdapter(String.valueOf(clientId), messages, this);
         messageList.setAdapter(adapter);
 
-        chatService = new ChatService(this);
-        chatService.listen();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.0.26:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        chatService = retrofit.create(ChatService.class);
+        Call<Message> call =  chatService.listen();
+        call.enqueue(new ListenMessagesCallback(this));
 
         editText = (EditText) findViewById(R.id.ed_text);
 
@@ -47,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ChatService(MainActivity.this).send(new Message(clientId, editText.getText().toString()));
+                chatService.send(new Message(String.valueOf(clientId), editText.getText().toString())).enqueue(new SendMessageCallback());
             }
         });
     }
@@ -56,10 +67,17 @@ public class MainActivity extends AppCompatActivity {
 
         messages.add(m);
 
-        MessageAdapter adapter = new MessageAdapter(clientId, messages, this);
+        MessageAdapter adapter = new MessageAdapter(String.valueOf(clientId), messages, this);
 
         messageList.setAdapter(adapter);
 
-        chatService.listen();
+        listenMessage();
     }
+
+    public void listenMessage(){
+        Call<Message> call = chatService.listen();
+        call.enqueue(new ListenMessagesCallback(this));
+    }
+
+
 }
