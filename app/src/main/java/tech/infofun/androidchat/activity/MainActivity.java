@@ -12,6 +12,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import tech.infofun.androidchat.app.ChatApplication;
 import tech.infofun.androidchat.R;
@@ -25,10 +28,16 @@ import tech.infofun.androidchat.service.ChatService;
 public class MainActivity extends AppCompatActivity {
 
     private int clientId = 1;
-    private EditText editText;
-    private Button button;
 
-    private ListView messageList;
+    @BindView(R.id.ed_text)
+    EditText editText;
+
+    @BindView(R.id.bt_send)
+    Button button;
+
+    @BindView(R.id.lv_message)
+    ListView messageList;
+
     private List<Message> messages;
 
     @Inject
@@ -41,28 +50,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
+
         ChatApplication app = (ChatApplication) getApplication();
         component = app.getComponent();
         component.inject(this);
 
-        messageList = (ListView) findViewById(R.id.lv_message);
         messages = new ArrayList<>();
         MessageAdapter adapter = new MessageAdapter(String.valueOf(clientId), messages, this);
         messageList.setAdapter(adapter);
 
         Call<Message> call =  chatService.listen();
         call.enqueue(new ListenMessagesCallback(this));
+    }
 
-        editText = (EditText) findViewById(R.id.ed_text);
-
-        button = (Button) findViewById(R.id.bt_send);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chatService.send(new Message(String.valueOf(clientId), editText.getText().toString())).enqueue(new SendMessageCallback());
-            }
-        });
+    @OnClick(R.id.bt_send)
+    public void sendMessage(){
+        chatService.send(new Message(String.valueOf(clientId), editText.getText().toString())).enqueue(new SendMessageCallback());
     }
 
     public void insertInList(Message m){
