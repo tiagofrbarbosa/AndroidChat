@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -42,7 +43,7 @@ import tech.infofun.androidchat.service.ChatService;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int clientId = 1;
+    private int clientId = new Random().nextInt();
 
     @BindView(R.id.ed_text)
     EditText editText;
