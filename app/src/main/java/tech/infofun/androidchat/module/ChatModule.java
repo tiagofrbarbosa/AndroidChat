@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -32,6 +34,11 @@ public class ChatModule{
 
         ChatService chatService = retrofit.create(ChatService.class);
         return chatService;
+    }
+
+    @Provides
+    public EventBus getEventBus(){
+        return EventBus.builder().build();
     }
 
     @Provides

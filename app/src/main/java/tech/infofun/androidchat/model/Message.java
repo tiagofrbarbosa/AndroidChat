@@ -2,10 +2,12 @@ package tech.infofun.androidchat.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by tfbarbosa on 24/05/17.
  */
-public class Message {
+public class Message implements Serializable{
 
     @SerializedName("text")
     private String text;
