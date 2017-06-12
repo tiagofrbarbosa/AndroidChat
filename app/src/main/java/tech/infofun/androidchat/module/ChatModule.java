@@ -1,5 +1,9 @@
 package tech.infofun.androidchat.module;
 
+import android.app.Application;
+
+import com.squareup.picasso.Picasso;
+
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -13,6 +17,12 @@ import tech.infofun.androidchat.service.ChatService;
 @Module
 public class ChatModule{
 
+    private Application app;
+
+    public ChatModule(Application app){
+        this.app = app;
+    }
+
     @Provides
     public ChatService getChatService(){
         Retrofit retrofit = new Retrofit.Builder()
@@ -22,5 +32,11 @@ public class ChatModule{
 
         ChatService chatService = retrofit.create(ChatService.class);
         return chatService;
+    }
+
+    @Provides
+    public Picasso getPicasso(){
+        Picasso picasso = new Picasso.Builder(app).build();
+        return picasso;
     }
 }

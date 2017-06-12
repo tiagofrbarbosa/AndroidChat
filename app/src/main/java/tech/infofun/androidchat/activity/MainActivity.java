@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +41,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.lv_message)
     ListView messageList;
 
+    @BindView(R.id.iv_user_avatar)
+    ImageView avatar;
+
     private List<Message> messages;
 
     @Inject
     ChatService chatService;
+
+    @Inject
+    Picasso picasso;
 
     private ChatComponent component;
 
@@ -51,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        picasso.with(this)
+                .load("https://api.adorable.io/avatars/285/" + clientId + ".png")
+                .into(avatar);
 
         ChatApplication app = (ChatApplication) getApplication();
         component = app.getComponent();
